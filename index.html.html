@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SS Tools – Your All-in-One Smart Tool Suite</title>
+    <meta name="description" content="SS Tools offers a free suite of online tools for students and professionals, including PDF merger, GPA calculator, citation generator, image compressor, and more. Simplify your digital tasks.">
+    <meta name="keywords" content="online tools, student tools, free tools, PDF tools, image converter, gpa calculator, citation generator, ocr, text summarizer, SS Tools, smart tools, pdf merge, image compress, word to pdf, text to speech hindi, loan calculator, favicon generator">
+    <meta name="author" content="SS Tools">
+
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- External Libraries for Tools -->
+    <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+    <script>
+        if (typeof pdfjsLib !== 'undefined') {
+            pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
+        }
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.5.1/mammoth.browser.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src='https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js'></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        :root {
+            --bg-color: #02020a; 
+            --text-color: #FFFFFF;
+            --subtext-color: #B3B3B3;
+            --header-grad-start: #F48AAE;
+            --header-grad-end: #8B61F8;
+            --btn-primary-bg: #F58CBF;
+            --btn-secondary-bg: #7A5CFA;
+            --card-bg: rgba(26, 26, 29, 0.85);
+            --card-border: rgba(42, 42, 46, 0.9);
+            --glow-primary: #F58CBF;
+            --glow-secondary: #8B61F8;
+            --shadow-color: rgba(0, 0, 0, 0.5);
+            --scroll-thumb-bg: #333;
+            --scroll-track-bg: #1a1a1a;
+            --toggle-bg: #333;
+            --toggle-slider: #fff;
+        }
+        [data-theme="light"] {
+            --bg-color: #f0f4f8;
+            --text-color: #1a1a1a;
+            --subtext-color: #555555;
+            --header-grad-start: #C6DBFF;
+            --header-grad-end: #98F2E8;
+            --btn-primary-bg: #5AE3D3;
+            --btn-secondary-bg: #3B7DF8;
+            --card-bg: rgba(255, 255, 255, 0.85);
+            --card-border: rgba(224, 224, 224, 0.9);
+            --glow-primary: #5AE3D3;
+            --glow-secondary: #3B7DF8;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --scroll-thumb-bg: #ccc;
+            --scroll-track-bg: #f0f0f0;
+            --toggle-bg: #ccc;
+            --toggle-slider: #3B7DF8;
+        }
+        html { scroll-behavior: smooth; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: var(--bg-color); color: var(--text-color); transition: background-color 0.3s ease, color 0.3s ease; overflow-x: hidden; }
+        body.modal-open {
+            overflow: hidden;
+        }
+        p { text-align: justify; line-height: 1.7; }
+        .space-background { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index:-1; }
+        #nebula-canvas { z-index: -2; }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--scroll-track-bg); }
+        ::-webkit-scrollbar-thumb { background: var(--scroll-thumb-bg); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--btn-secondary-bg); }
+        h1, h2, h3, .cta-button, .logo-text, .buy-now-btn { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; font-weight: bold; }
+        a { color: var(--btn-primary-bg); text-decoration: none; transition: color 0.3s ease; }
+        a:hover { color: var(--btn-secondary-bg); }
+        .container { display: flex; max-width: 100%; margin: 0 auto; padding-top: 80px; transition: padding-left 0.3s ease-in-out; }
+        main { flex-grow: 1; padding: 1rem 2rem; width: 100%; transition: margin-left 0.3s ease-in-out; }
+        section { padding: 1.5rem 0; border-bottom: 1px solid var(--card-border); }
+        section:last-of-type { border-bottom: none; }
+        .section-title { text-align: center; font-size: 2.5rem; margin-bottom: 1.5rem; background: linear-gradient(90deg, var(--glow-primary), var(--glow-secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; text-fill-color: transparent; }
+        [data-theme="light"] .section-title { background: linear-gradient(90deg, var(--btn-secondary-bg), var(--btn-primary-bg)); -webkit-background-clip: text; background-clip: text; }
+        header { position: fixed; top: 0; left: 0; width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 0 1rem; height: 80px; background: rgba(10, 10, 16, 0.7); z-index: 1000; box-shadow: 0 4px 15px var(--shadow-color); backdrop-filter: blur(10px); border-bottom: 1px solid var(--card-border); }
+        [data-theme="light"] header { background: rgba(245, 247, 250, 0.7); }
+        .header-left { display: flex; align-items: center; gap: 1rem; }
+        .sidebar-toggle { display: block; cursor: pointer; background: none; border: none; color: var(--text-color); font-size: 1.8rem; }
+        .logo { display: flex; align-items: center; gap: 0.75rem; text-decoration:none; }
+        .logo-icon-svg { height: 45px; width: 45px; }
+        .logo-text { font-size: 1.5rem; color: var(--text-color); text-shadow: 1px 1px 5px rgba(0,0,0,0.3); }
+        nav { display: flex; gap: 1.5rem; }
+        nav a { color: var(--text-color); font-weight: bold; text-transform: uppercase; letter-spacing: 1px; position: relative; padding: 5px 0; }
+        nav a::after { content: ''; position: absolute; bottom: 0; left: 0; width: 0; height: 2px; background-color: var(--glow-primary); transition: width 0.3s ease; }
+        nav a:hover::after, nav a.active-link::after { width: 100%; }
+        .header-right { display: flex; align-items: center; gap: 1.5rem; padding-right: 1rem; }
+        .mobile-menu-toggle { display: none; cursor: pointer; background: none; border: none; color: var(--text-color); font-size: 1.8rem; }
+        .theme-switcher .switch { position: relative; display: inline-block; width: 60px; height: 34px; }
+        .theme-switcher .switch input { opacity: 0; width: 0; height: 0; }
+        .theme-switcher .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--toggle-bg); transition: .4s; border-radius: 34px; }
+        .theme-switcher .slider:before { position: absolute; content: ""; height: 26px; width: 26px; left: 4px; bottom: 4px; background-color: var(--toggle-slider); transition: .4s; border-radius: 50%; background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="black" class="bi bi-moon-fill" viewBox="0 0 16 16"><path d="M6 .278a.768.768 0 0 1 .08.858 7.208 7.208 0 0 0-.878 3.46c0 4.021 3.278 7.277 7.318 7.277.527 0 1.04-.055 1.533-.16a.787.787 0 0 1 .81.316.733.733 0 0 1-.031.893A8.349 8.349 0 0 1 8.344 16C3.734 16 0 12.286 0 7.71 0 4.266 2.114 1.312 5.124.06A.752.752 0 0 1 6 .278z"/></svg>'); background-repeat: no-repeat; background-position: center; }
+        .theme-switcher input:checked + .slider { background-color: var(--toggle-bg); }
+        .theme-switcher input:checked + .slider:before { transform: translateX(26px); background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="white" class="bi bi-sun-fill" viewBox="0 0 16 16"><path d="M8 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM8 0a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 0zm0 13a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 13zm8-5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2a.5.5 0 0 1 .5.5zM3 8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2A.5.5 0 0 1 3 8zm10.657-5.657a.5.5 0 0 1 0 .707l-1.414 1.415a.5.5 0 1 1-.707-.708l1.414-1.414a.5.5 0 0 1 .707 0zm-9.193 9.193a.5.5 0 0 1 0 .707L3.05 13.657a.5.5 0 0 1-.707-.707l1.414-1.414a.5.5 0 0 1 .707 0zm9.193 2.121a.5.5 0 0 1-.707 0l-1.414-1.414a.5.5 0 0 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .707zM4.464 4.465a.5.5 0 0 1-.707 0L2.343 3.05a.5.5 0 1 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .708z"/></svg>'); }
+        [data-theme="light"] .theme-switcher .slider:before { background-color: var(--toggle-slider); }
+        [data-theme="dark"] .theme-switcher input:checked + .slider:before { background-color: var(--toggle-slider); }
+        .sidebar { width: 250px; flex-shrink: 0; background: var(--card-bg); backdrop-filter: blur(5px); padding: 2rem 1rem; border-right: 1px solid var(--card-border); transition: transform 0.3s ease-in-out, width 0.3s ease-in-out; position: fixed; top: 80px; left: 0; height: calc(100vh - 80px); z-index: 900; overflow-y: auto; overflow-x: hidden; }
+        body.sidebar-collapsed .sidebar { transform: translateX(-100%); }
+        body.sidebar-collapsed main { margin-left: 0; }
+        main { margin-left: 250px; }
+        .sidebar h3 { margin-bottom: 1.5rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--card-border); color: var(--subtext-color); }
+        .sidebar ul { list-style: none; }
+        .sidebar li a { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem; border-radius: 8px; color: var(--subtext-color); font-weight: bold; transition: all 0.3s ease; }
+        .sidebar li a:hover, .sidebar li a.active { background-color: var(--btn-secondary-bg); color: #fff; box-shadow: 0 0 15px var(--glow-secondary); }
+        .sidebar li a .icon { font-size: 1.2rem; text-shadow: 0 0 8px var(--glow-secondary); }
+        .hero { text-align: center; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 2rem 1rem; }
+        .hero h1 { font-size: 3.5rem; margin-bottom: 1rem; color: var(--text-color); text-align: center; }
+        .hero .subtitle { font-size: 1.2rem; color: var(--subtext-color); max-width: 600px; margin-bottom: 1.5rem; }
+        .seo-description { font-size: 1rem; color: var(--subtext-color); max-width: 800px; margin: 0 auto 2rem auto; line-height: 1.7; padding: 0 1rem; }
+        .cta-button { padding: 1rem 2.5rem; font-size: 1.2rem; color: #fff; background: linear-gradient(90deg, var(--btn-primary-bg), var(--btn-secondary-bg)); border: none; border-radius: 50px; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 0 20px var(--glow-primary); }
+        .cta-button:hover { transform: translateY(-3px); box-shadow: 0 0 30px var(--glow-secondary); }
+        .cta-button:disabled { background: #555; color: #aaa; cursor: not-allowed; box-shadow: none; transform: none; }
+        .grid-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; }
+        .tool-card { background: var(--card-bg); backdrop-filter: blur(5px); border: 1px solid var(--card-border); border-radius: 12px; padding: 1.5rem; text-align: center; transition: all 0.3s ease; box-shadow: 0 5px 15px var(--shadow-color); cursor: pointer; position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; }
+        .tool-card:hover { transform: translateY(-5px); box-shadow: 0 0 15px var(--glow-primary), 0 0 30px var(--glow-secondary); border-color: var(--glow-primary); }
+        .tool-card::before { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, var(--glow-primary), transparent); opacity: 0.3; transition: left 0.5s ease; }
+        .tool-card:hover::before { left: 100%; }
+        .tool-icon { font-size: 2.5rem; margin-bottom: 1rem; background: linear-gradient(90deg, var(--glow-primary), var(--glow-secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; text-fill-color: transparent; }
+        [data-theme="light"] .tool-icon { background: linear-gradient(90deg, var(--btn-secondary-bg), var(--btn-primary-bg)); -webkit-background-clip: text; background-clip: text; }
+        .tool-card h3 { font-size: 1.1rem; margin-bottom: 0.5rem; color: var(--text-color); text-align: center; }
+        .tool-card p { font-size: 0.85rem; color: var(--subtext-color); line-height: 1.4; }
+        .how-to-container { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 2rem; }
+        .how-to-card { background: var(--card-bg); backdrop-filter: blur(5px); border: 1px solid var(--card-border); border-radius: 12px; padding: 2rem; transition: all 0.3s ease; box-shadow: 0 5px 15px var(--shadow-color); }
+        .how-to-card:hover { transform: translateY(-5px); box-shadow: 0 0 15px var(--glow-primary); border-color: var(--glow-primary); }
+        .how-to-card h3 { font-size: 1.5rem; color: var(--glow-primary); margin-bottom: 1rem; text-align: left; }
+        [data-theme="light"] .how-to-card h3 { color: var(--btn-secondary-bg); }
+        .how-to-card p { color: var(--subtext-color); line-height: 1.7; font-size: 0.95rem; }
+        .page-content h3 { font-size: 1.8rem; color: var(--glow-primary); margin-top: 2rem; margin-bottom: 1rem; }
+        [data-theme="light"] .page-content h3 { color: var(--btn-secondary-bg); }
+        .page-content p, .page-content li { color: var(--subtext-color); margin-bottom: 1rem; }
+        .page-content ul { list-style-position: inside; padding-left: 1rem; }
+        .site-footer { background: var(--card-bg); backdrop-filter: blur(5px); border-top: 1px solid var(--card-border); padding: 2rem; color: var(--subtext-color); }
+        .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; max-width: 1200px; margin: 0 auto 3rem auto; }
+        .footer-col h4 { color: var(--text-color); margin-bottom: 1.5rem; font-size: 1.2rem; position: relative; text-align: left; }
+        .footer-col h4::after { content: ''; position: absolute; left: 0; bottom: -5px; height: 2px; width: 40px; background: linear-gradient(90deg, var(--glow-primary), var(--glow-secondary)); }
+        .footer-col p, .footer-col li { margin-bottom: 0.75rem; text-align: left; }
+        .footer-col ul { list-style: none; }
+        .footer-col a { color: var(--subtext-color); }
+        .footer-col a:hover { color: var(--glow-primary); text-decoration: underline; }
+        .footer-socials a { display: inline-flex; justify-content: center; align-items: center; width: 40px; height: 40px; background-color: rgba(255,255,255,0.1); border-radius: 50%; margin-right: 10px; font-size: 1.1rem; transition: all 0.3s ease; }
+        .footer-socials a:hover { background-color: var(--btn-primary-bg); color: #fff; transform: translateY(-3px); }
+        .footer-form input, .footer-form textarea { width: 100%; padding: 0.8rem; margin-bottom: 1rem; border-radius: 8px; border: 1px solid var(--card-border); background-color: var(--bg-color); color: var(--text-color); }
+        .footer-form textarea { resize: vertical; }
+        .footer-form button { width: 100%; padding: 0.8rem; border: none; border-radius: 8px; background: var(--btn-secondary-bg); color: #fff; font-weight: bold; cursor: pointer; transition: all 0.3s ease; }
+        .footer-form button:hover { background: var(--btn-primary-bg); }
+        .footer-bottom { text-align: center; padding-top: 2rem; border-top: 1px solid var(--card-border); margin-top: 2rem; }
+        .footer-bottom p { text-align: center; }
+        .modal { position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.7); backdrop-filter: blur(5px); display: none; justify-content: center; align-items: center; animation: fadeIn 0.3s ease; }
+        .modal-content { background-color: var(--card-bg); padding: 2rem; border: 1px solid var(--card-border); border-radius: 12px; width: 90%; max-width: 600px; max-height: 90vh; overflow-y: auto; position: relative; box-shadow: 0 0 30px var(--glow-secondary); animation: slideIn 0.4s ease-out; }
+        .close-btn { position: absolute; top: 1rem; right: 1.5rem; color: var(--subtext-color); font-size: 2rem; font-weight: bold; cursor: pointer; transition: color 0.3s ease; }
+        .close-btn:hover { color: var(--glow-primary); }
+        .modal-title { font-size: 1.8rem; margin-bottom: 1.5rem; text-align: center; color: var(--text-color); }
+        .tool-interface { display: flex; flex-direction: column; gap: 1.5rem; }
+        .drop-zone { border: 2px dashed var(--card-border); border-radius: 8px; padding: 3rem; text-align: center; cursor: pointer; transition: all 0.3s ease; }
+        .drop-zone.dragover { border-color: var(--glow-primary); background-color: rgba(245, 140, 191, 0.1); }
+        .drop-zone-text { color: var(--subtext-color); text-align: center; }
+        #file-list { font-weight: bold; color: var(--glow-primary); margin-top: 1rem; text-align: center;}
+        .tool-textarea { width: 100%; min-height: 150px; background: var(--bg-color); border: 1px solid var(--card-border); border-radius: 8px; padding: 1rem; color: var(--text-color); font-family: monospace; resize: vertical; }
+        .processing-status { text-align: center; font-size: 1.1rem; font-weight: bold; }
+        .status-item.active { color: var(--glow-primary); }
+        .download-button { display: inline-block; padding: 0.8rem 1.5rem; color: #fff; background: var(--btn-secondary-bg); border: none; border-radius: 8px; cursor: pointer; width: 100%; text-align: center; text-decoration: none; }
+        .download-button:hover { background: var(--btn-primary-bg); }
+        .tool-output { background: var(--bg-color); border: 1px solid var(--card-border); padding: 1rem; border-radius: 8px; word-wrap: break-word; margin-top: 1rem; min-height: 50px; }
+        .tool-results { display: none; flex-direction: column; gap: 1rem; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--card-border); }
+        .results-grid { display: flex; flex-wrap: wrap; gap: 10px; }
+        .results-grid .download-button { width: auto; }
+        .tool-controls { display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; }
+        .tool-controls label { font-weight: normal; color: var(--subtext-color); }
+        .tool-controls input, .tool-controls select { padding: 0.5rem; background: var(--bg-color); border: 1px solid var(--card-border); color: var(--text-color); border-radius: 4px; }
+        .tool-controls input[type="range"], .tool-controls input[type="number"] { flex-grow: 1; }
+        .speech-btn.recording { animation: pulse 1.5s infinite; background: #e74c3c; }
+        .ad-wrapper {
+            margin: 1.5rem auto;
+            padding: 1rem 0;
+            text-align: center;
+            max-width: 100%;
+        }
+        .ad-grid-item {
+            grid-column: 1 / -1; /* Make ad span full width of the grid */
+            padding: 1rem 0;
+            text-align: center;
+        }
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(231, 76, 60, 0); } 100% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideIn { from { transform: translateY(-30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        #confetti-wrapper { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999; overflow: hidden; }
+        .confetti { position: absolute; width: 10px; height: 20px; background-color: #f00; top: -20px; opacity: 0.9; animation: fall linear forwards; }
+        @keyframes fall { to { transform: translateY(105vh) rotate(720deg); opacity: 0; } }
+        @media (max-width: 992px) { .footer-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 768px) { header nav { display: none; } .mobile-menu-toggle { display: block; } .sidebar-toggle { display: none; } main { margin-left: 0; padding: 1rem; } .sidebar { transform: translateX(-100%); width: 280px; box-shadow: 5px 0 15px rgba(0,0,0,0.2); } body.sidebar-open .sidebar { transform: translateX(0); } body.sidebar-collapsed main { margin-left: 0; } .hero h1 { font-size: 2.5rem; } .section-title { font-size: 2rem; } .grid-container, .how-to-container { grid-template-columns: 1fr; } .footer-grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body class="sidebar-collapsed">
+
+    <div id="confetti-wrapper"></div>
+    
+    <canvas id="nebula-canvas" class="space-background"></canvas>
+    <canvas id="starfield-canvas" class="space-background"></canvas>
+
+    <header>
+        <div class="header-left">
+            <button class="sidebar-toggle" id="sidebar-toggle-btn">☰</button>
+            <a href="#tools" class="logo main-link">
+                <!-- NEW LOGO -->
+                <svg class="logo-icon-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="var(--glow-primary)"/>
+                            <stop offset="100%" stop-color="var(--glow-secondary)"/>
+                        </linearGradient>
+                    </defs>
+                    <rect x="10" y="10" width="80" height="80" rx="20" fill="url(#logoGradient)"/>
+                    <path d="M 40 30 C 25 30, 25 50, 40 50 L 60 50 C 75 50, 75 70, 60 70"
+                          fill="none" stroke="#FFFFFF" stroke-width="12" stroke-linecap="round"/>
+                </svg>
+                <span class="logo-text">SS Tools</span>
+            </a>
+        </div>
+        <nav id="main-nav">
+            <a href="#tools" class="main-link active-link">Home</a>
+            <a href="#tools" class="main-link">Tools</a>
+            <a href="#how-to-use" class="main-link">How to Use</a>
+            <a href="#about" class="main-link">About</a>
+        </nav>
+        <div class="header-right">
+            <div class="theme-switcher">
+                <label class="switch">
+                    <input type="checkbox" id="theme-toggle">
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <button class="mobile-menu-toggle" id="mobile-menu-toggle-btn">☰</button>
+        </div>
+    </header>
+
+    <div class="container">
+        <aside class="sidebar" id="sidebar">
+            <h3>Tool Categories</h3>
+            <ul>
+                <li><a href="#all" class="sidebar-link active" data-category="all"><span class="icon">✨</span> All Tools</a></li>
+                <li><a href="#student" class="sidebar-link" data-category="student"><span class="icon">🎓</span> Student Tools</a></li>
+                <li><a href="#pdf" class="sidebar-link" data-category="pdf"><span class="icon">📄</span> PDF Tools</a></li>
+                <li><a href="#image" class="sidebar-link" data-category="image"><span class="icon">🖼️</span> Image Tools</a></li>
+                <li><a href="#text" class="sidebar-link" data-category="text"><span class="icon">✍️</span> Text Tools</a></li>
+                <li><a href="#dev" class="sidebar-link" data-category="dev"><span class="icon">💻</span> Developer Tools</a></li>
+                <li><a href="#finance" class="sidebar-link" data-category="finance"><span class="icon">💰</span> Finance Tools</a></li>
+                <li><a href="#utility" class="sidebar-link" data-category="utility"><span class="icon">🧮</span> Utilities</a></li>
+            </ul>
+        </aside>
+
+        <main>
+            <div id="main-content-wrapper">
+                <section id="home" class="hero">
+                    <!-- AD: Banner Ad above Title -->
+                    <div class="ad-wrapper">
+                        <script async="async" data-cfasync="false" src="//pl26585087.profitableratecpm.com/fd31bbebc1a0969f799516a51fddc752/invoke.js"></script>
+                        <div id="container-fd31bbebc1a0969f799516a51fddc752"></div>
+                    </div>
+
+                    <h1>SS Tools</h1>
+                    <p class="subtitle">Your Smart Suite for PDF, Image, Developer, and Student Tools. Fast, Free & Secure.</p>
+                    <p class="seo-description">
+                        SS Tools aapke sabhi digital zarooraton ke liye ek complete solution hai. Chahe aap ek student hon jise GPA calculate karna hai, ya ek professional jise Word se PDF banana hai, ya ek developer jise JSON format karna hai, hamare free online tools aapke kaam ko aasan banate hain. Hamari website par aapko PDF merge, split, aur convert karne ke aasan-se-istemal tools milenge. Iske alawa, aap high-quality image compressor, text utilities, developer tools, aur khas taur par students ke liye banaye gaye tools jaise GPA Calculator aur Citation Generator ka bhi laabh utha sakte hain. Sabhi tools 100% free aur surakshit hain.
+                    </p>
+                    <a href="#tools" class="cta-button main-link">Explore Tools</a>
+                    
+                    <!-- AD: Banner Ad below Explore Button -->
+                    <div class="ad-wrapper">
+                        <script type="text/javascript">
+                            atOptions = {
+                                'key' : '7590d6af9b19b04ab1f7dd8d5dc262de',
+                                'format' : 'iframe',
+                                'height' : 90,
+                                'width' : 728,
+                                'params' : {}
+                            };
+                        </script>
+                        <script type="text/javascript" src="//www.highperformanceformat.com/7590d6af9b19b04ab1f7dd8d5dc262de/invoke.js"></script>
+                    </div>
+                </section>
+                <section id="tools">
+                    <h2 class="section-title">Professional Tool Suite</h2>
+                    <div class="grid-container">
+                        <!-- Row 1 -->
+                        <div class="tool-card" data-tool="gpa-calculator" data-category="student utility"><div class="tool-icon">🎓</div><h3>GPA Calculator</h3><p>Apna Grade Point Average (GPA) calculate karein.</p></div>
+                        <div class="tool-card" data-tool="citation-generator" data-category="student text"><div class="tool-icon">📚</div><h3>Citation Generator</h3><p>MLA/APA format mein citations banayein.</p></div>
+                        <div class="tool-card" data-tool="text-summarizer" data-category="student text utility"><div class="tool-icon">📰</div><h3>Text Summarizer</h3><p>Lambi text ka chota saaransh (summary) banayein.</p></div>
+                        <div class="tool-card" data-tool="study-timer" data-category="student utility"><div class="tool-icon">⏲️</div><h3>Study Timer (Pomodoro)</h3><p>Focus badhane ke liye study timer ka upyog karein.</p></div>
+                        
+                        <!-- AD: In-Grid Banner -->
+                        <div class="ad-grid-item">
+                            <script type="text/javascript">
+                                atOptions = { 'key' : '7590d6af9b19b04ab1f7dd8d5dc262de', 'format' : 'iframe', 'height' : 90, 'width' : 728, 'params' : {} };
+                            </script>
+                            <script type="text/javascript" src="//www.highperformanceformat.com/7590d6af9b19b04ab1f7dd8d5dc262de/invoke.js"></script>
+                        </div>
+                        
+                        <!-- Row 2 -->
+                        <div class="tool-card" data-tool="ocr-tool" data-category="student image utility"><div class="tool-icon">👁️</div><h3>Image to Text (OCR)</h3><p>Kitab ya notes ki photo se text nikalein.</p></div>
+                        <div class="tool-card" data-tool="merge-pdf" data-category="pdf student"><div class="tool-icon">➕</div><h3>Merge PDF</h3><p>Ek se zyada PDF files ko ek mein jodein.</p></div>
+                        <div class="tool-card" data-tool="split-pdf" data-category="pdf"><div class="tool-icon">✂️</div><h3>Split PDF</h3><p>Ek PDF ko alag-alag pages mein todein.</p></div>
+                        <div class="tool-card" data-tool="pdf-watermark" data-category="pdf utility"><div class="tool-icon">💧</div><h3>PDF Watermarker</h3><p>Apni PDF files par text watermark lagayein.</p></div>
+                        
+                        <!-- Row 3 -->
+                        <div class="tool-card" data-tool="compress-image" data-category="image"><div class="tool-icon">📉</div><h3>Image Compressor</h3><p>Quality khoye bina image file size kam karein.</p></div>
+                        <div class="tool-card" data-tool="favicon-generator" data-category="image dev utility"><div class="tool-icon">🌐</div><h3>Favicon Generator</h3><p>Apni website ke liye favicon banayein.</p></div>
+                        <div class="tool-card" data-tool="jpg-to-pdf" data-category="pdf image converter student"><div class="tool-icon">📑</div><h3>Image to PDF</h3><p>JPG/PNG images ko ek PDF file mein combine karein.</p></div>
+                        <div class="tool-card" data-tool="pdf-to-jpg" data-category="pdf image converter"><div class="tool-icon">🖼️</div><h3>PDF to Image</h3><p>PDF pages ko JPG/PNG images mein convert karein.</p></div>
+                        
+                        <!-- AD: In-Grid Banner -->
+                        <div class="ad-grid-item">
+                            <script type="text/javascript">
+                                atOptions = { 'key' : '7590d6af9b19b04ab1f7dd8d5dc262de', 'format' : 'iframe', 'height' : 90, 'width' : 728, 'params' : {} };
+                            </script>
+                            <script type="text/javascript" src="//www.highperformanceformat.com/7590d6af9b19b04ab1f7dd8d5dc262de/invoke.js"></script>
+                        </div>
+
+                        <!-- Row 4 -->
+                        <div class="tool-card" data-tool="word-to-pdf" data-category="pdf converter student"><div class="tool-icon">📄</div><h3>Word to PDF</h3><p>Word documents ko PDF mein badlein.</p></div>
+                        <div class="tool-card" data-tool="unix-converter" data-category="dev utility"><div class="tool-icon">🕰️</div><h3>Unix Timestamp</h3><p>Timestamp aur date ke beech convert karein.</p></div>
+                        <div class="tool-card" data-tool="emi-calculator" data-category="finance utility"><div class="tool-icon">💰</div><h3>Loan/EMI Calculator</h3><p>Apni maasik loan EMI ki ganana karein.</p></div>
+                        <div class="tool-card" data-tool="word-counter" data-category="text utility student"><div class="tool-icon">🧮</div><h3>Word Counter</h3><p>Text mein shabd aur akshar ginein.</p></div>
+
+                        <!-- Row 5 -->
+                        <div class="tool-card" data-tool="qr-generator" data-category="generator utility"><div class="tool-icon">📱</div><h3>QR Code Generator</h3><p>URLs, text, aadi ke liye QR code banayein.</p></div>
+                        <div class="tool-card" data-tool="password-generator" data-category="generator utility dev"><div class="tool-icon">🔑</div><h3>Password Generator</h3><p>Majboot aur surakshit password banayein.</p></div>
+                        <div class="tool-card" data-tool="css-gradient" data-category="generator dev"><div class="tool-icon">🎨</div><h3>CSS Gradient Generator</h3><p>Sundar CSS gradients banayein aur code payein.</p></div>
+                        <div class="tool-card" data-tool="json-formatter" data-category="dev"><div class="tool-icon">{}</div><h3>JSON Formatter</h3><p>JSON data ko format, validate, aur beautify karein.</p></div>
+                        
+                         <!-- AD: In-Grid Banner -->
+                        <div class="ad-grid-item">
+                            <script type="text/javascript">
+                                atOptions = { 'key' : '7590d6af9b19b04ab1f7dd8d5dc262de', 'format' : 'iframe', 'height' : 90, 'width' : 728, 'params' : {} };
+                            </script>
+                            <script type="text/javascript" src="//www.highperformanceformat.com/7590d6af9b19b04ab1f7dd8d5dc262de/invoke.js"></script>
+                        </div>
+                        
+                        <!-- Row 6 -->
+                        <div class="tool-card" data-tool="base64-converter" data-category="dev converter"><div class="tool-icon">🔒</div><h3>Base64 Converter</h3><p>Text ko Base64 mein encode/decode karein.</p></div>
+                        <div class="tool-card" data-tool="age-calculator" data-category="utility"><div class="tool-icon">🎂</div><h3>Age Calculator</h3><p>Apni umra saal, mahine, aur din mein calculate karein.</p></div>
+                        <div class="tool-card" data-tool="bmi-calculator" data-category="utility"><div class="tool-icon">💪</div><h3>BMI Calculator</h3><p>Apna Body Mass Index (BMI) check karein.</p></div>
+                        <div class="tool-card" data-tool="random-picker" data-category="utility student"><div class="tool-icon">🎲</div><h3>Random Picker</h3><p>Ek list se random item chunein.</p></div>
+
+                        <!-- Row 7 -->
+                        <div class="tool-card" data-tool="text-to-speech" data-category="utility text student"><div class="tool-icon">🗣️</div><h3>Text to Speech</h3><p>Likhe hue text ko natural audio mein badlein.</p></div>
+                    </div>
+                </section>
+
+                <!-- AD: Native Banner before "How to use" -->
+                <div class="ad-wrapper">
+                    <script async="async" data-cfasync="false" src="//pl26585087.profitableratecpm.com/fd31bbebc1a0969f799516a51fddc752/invoke.js"></script>
+                    <div id="container-fd31bbebc1a0969f799516a51fddc752_4"></div>
+                </div>
+
+                <section id="how-to-use">
+                    <h2 class="section-title">Tools Kaise Istemal Karein</h2>
+                    <div class="how-to-container">
+                        <div class="how-to-card"><h3>Merge PDF</h3><p>Ek se zyada PDF files ko aasani se ek single document mein jodne ke liye, 'Merge PDF' tool par click karein. Phir, 'Drag and drop' area ka istemal karke apni files upload karein ya file chunnane ke liye click karein. Files upload hone ke baad, 'Process Karein' button par click karein. Hamara system turant aapki sabhi PDFs ko ek file mein jod dega, jise aap seedhe download kar sakte hain. Yeh process tez, surakshit aur bilkul free hai.</p></div>
+                        <div class="how-to-card"><h3>GPA Calculator</h3><p>Apna GPA (Grade Point Average) aasaani se calculate karein. 'GPA Calculator' tool open karein. Har course ke liye, uska naam (optional), credits (jaise 3), aur aapko mila grade (jaise A, B+, C) enter karein. Aur courses jodne ke liye 'Add Course' button par click karein. Jab aap sabhi courses enter kar dein, to 'Calculate GPA' button dabayein. Aapka final GPA turant screen par dikh jayega. Yeh aapki academic progress ko track karne ka ek behtareen tareeka hai.</p></div>
+                        <div class="how-to-card"><h3>Loan/EMI Calculator</h3><p>Apne agle loan ki planning aasaani se karein. 'Loan/EMI Calculator' tool open karein aur loan ki rakam (principal), saalana byaaj dar (annual interest rate), aur loan ki avadhi (term in years) enter karein. 'Calculate' button par click karte hi, tool aapko aapki maasik EMI, kul byaaj, aur kul bhugtaan ki jaankari dega. Yeh aapko behtar financial decisions lene mein madad karega.</p></div>
+                        <div class="how-to-card"><h3>Favicon Generator</h3><p>Apni website ko ek professional look dein. 'Favicon Generator' tool mein apni logo image (PNG, JPG) upload karein. 'Generate' par click karte hi, tool aapke liye alag-alag zaroori sizes (16x16, 32x32, apple-touch-icon) mein favicons bana dega. Aap in sabhi files ko ek ZIP file mein download kar sakte hain aur saath hi apni website ke `<head>` section mein lagane ke liye zaroori HTML code bhi copy kar sakte hain.</p></div>
+                    </div>
+                </section>
+                <section id="about" style="text-align:center;">
+                    <!-- AD: Native Banner above "About Us" -->
+                    <div class="ad-wrapper">
+                        <script async="async" data-cfasync="false" src="//pl26585087.profitableratecpm.com/fd31bbebc1a0969f799516a51fddc752/invoke.js"></script>
+                        <div id="container-fd31bbebc1a0969f799516a51fddc752_2"></div>
+                    </div>
+
+                    <h2 class="section-title">Hamare Bare Mein</h2>
+                    <p style="max-width: 700px; margin: auto; color: var(--subtext-color);">SS Tools par hamara focus "Quality over Quantity" hai. Hum aapko high-quality, reliable, aur 100% kaam karne wale tools pradan karne ke liye samarpit hain, taaki aapke complex digital tasks saral aur accessible ban sakein.</p>
+                    
+                     <!-- AD: Native Banner below "About Us" -->
+                    <div class="ad-wrapper">
+                        <script async="async" data-cfasync="false" src="//pl26585087.profitableratecpm.com/fd31bbebc1a0969f799516a51fddc752/invoke.js"></script>
+                        <div id="container-fd31bbebc1a0969f799516a51fddc752_3"></div>
+                    </div>
+                </section>
+            </div>
+            <div id="policy-content-wrapper" style="display:none;">
+                <section id="privacy-policy" class="page-content">
+                    <h2 class="section-title">Privacy Policy</h2><p><strong>Last Updated: 14 July 2025</strong></p><p>SS Tools ("hum", "hamara", "hamein") aapki privacy ki suraksha ke liye pratibaddh hai. Yeh Privacy Policy batati hai ki jab aap hamari website (SSTools.com) ka upyog karte hain to hum aapki jaankari kaise collect, use, aur protect karte hain.</p><h3>Hum Kya Jaankari Collect Karte Hain</h3><p>Hamare adhiktar tools client-side par kaam karte hain, iska matlab hai ki aap jo files ya data process karte hain, woh kabhi bhi hamare servers par nahi bheja jaata hai. Hum aapke dwara upload ki gayi kisi bhi file ko store ya dekhte nahi hain.</p><ul><li><strong>Contact Form:</strong> Jab aap hamare contact form ke madhyam se humse sampark karte hain, to hum aapka naam aur email address collect karte hain taaki hum aapke sawalon ka jawab de sakein.</li><li><strong>Log Data:</strong> Hamari website par aane wale traffic ko analyse karne ke liye hum basic log data (jaise IP address, browser type) collect kar sakte hain. Yeh data personal identification ke liye use nahi kiya jaata.</li></ul><h3>Cookies</h3><p>Hum website functionality aur user experience ko behtar banane ke liye cookies ka istemal karte hain. Aap apne browser settings se cookies ko disable kar sakte hain.</p><h3>Aapki Jaankari Ki Suraksha</h3><p>Hum aapki jaankari ki suraksha ke liye uchit kadam uthate hain. Kyunki hum sensitive data store nahi karte hain, isliye data breach ka khatra bahut kam hai.</p><h3>Policy Mein Badlav</h3><p>Hum is Privacy Policy ko samay-samay par update kar sakte hain. Kisi bhi badlav ke liye is page ko niyamit roop se check karein.</p><h3>Sampark Karein</h3><p>Agar is Privacy Policy ke baare mein aapke koi sawal hain, to aap humse <a href="mailto:support.sstools@gmail.com">support.sstools@gmail.com</a> par sampark kar sakte hain.</p>
+                </section>
+                <section id="terms-of-service" class="page-content">
+                    <h2 class="section-title">Terms of Service</h2><p><strong>Last Updated: 14 July 2025</strong></p><p>SSTools.com ("Website") par aapka swagat hai. Is website ka upyog karke, aap in Terms of Service ("Terms") se sahamat hote hain. Kripya inhein dhyan se padhein.</p><h3>Services Ka Upyog</h3><p>Hum aapko vibhinn online tools ("Services") pradan karte hain. Aap in services ka upyog keval kanooni uddeshyon ke liye karne ke liye sahamat hain. Aap kisi bhi aise content ko upload ya process nahi karenge jo gair-kanooni, apmanjanak, ya kisi ke intellectual property rights ka ullanghan karta ho.</p><h3>Intellectual Property</h3><p>Website aur iski mool samagri, features, aur functionality SS Tools ke sampatti hain aur copyright, trademark, aur anya intellectual property kanoonon dwara surakshit hain.</p><h3>Warranty Disclaimer</h3><p>Hamari services "as is" aur "as available" aadhar par pradan ki jaati hain. Hum kisi bhi tarah ki warranty nahi dete hain, chahe woh spasht ho ya nihit. Hum yeh guarantee nahi dete ki hamare tools hamesha surakshit, error-free, ya available rahenge.</p><h3>Liability Ki Seema</h3><p>Kisi bhi sthiti mein SS Tools ya uske nideshak, karmachari, ya sahayogi kisi bhi apratyaksh, aakasmik, vishesh, parinaami ya dandatmak kshati ke liye dayi nahi honge, jismein data ka nuksan ya anya amूर्त nuksan shamil hai, jo aapke dwara hamari services ke upyog se utpann hota hai.</p><h3>Sharton Mein Badlav</h3><p>Hum in Terms ko kisi bhi samay badalne ka adhikar surakshit rakhte hain. Badlav ke baad website ka upyog jaari rakhne ka matlab hai ki aap un badlavon ko sweekar karte hain.</p><h3>Sampark Karein</h3><p>Agar in Terms ke baare mein aapke koi sawal hain, to aap humse <a href="mailto:support.sstools@gmail.com">support.sstools@gmail.com</a> par sampark kar sakte hain.</p>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <footer class="site-footer">
+        <div class="footer-grid">
+            <div class="footer-col">
+                <h4>SS Tools</h4><p>Aapke digital karyon ko saral banane ke liye banaye gaye muft aur upyogi online tools ka ek suite.</p><p>Email: <a href="mailto:support.sstools@gmail.com">support.sstools@gmail.com</a></p>
+            </div>
+            <div class="footer-col">
+                <h4>Quick Links</h4><ul><li><a href="#tools" class="main-link">Home</a></li><li><a href="#tools" class="main-link">Tools</a></li><li><a href="#how-to-use" class="main-link">Kaise Istemal Karein</a></li><li><a href="#about" class="main-link">Hamare Bare Mein</a></li><li><a href="#privacy-policy" class="page-link">Privacy Policy</a></li><li><a href="#terms-of-service" class="page-link">Terms of Service</a></li></ul>
+            </div>
+            <div class="footer-col">
+                <h4>Follow Us</h4><p>Naye tools aur updates ke liye hamare saath judein.</p>
+                <div class="footer-socials">
+                    <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                    <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                    <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a> 
+                </div>
+            </div>
+            <div class="footer-col">
+                <h4>Hamein Message Bhejein</h4>
+                <form class="footer-form" action="mailto:support.sstools@gmail.com" method="post" enctype="text/plain">
+                    <input type="text" name="name" placeholder="Aapka Naam" required>
+                    <input type="email" name="email" placeholder="Aapka Email" required>
+                    <textarea name="message" placeholder="Aapki samasya ya sujhav..." rows="3" required></textarea>
+                    <button type="submit">Bhejein</button>
+                </form>
+            </div>
+        </div>
+        <div class="footer-bottom"><p>© 2025 SS Tools. All Rights Reserved.</p></div>
+    </footer>
+
+    <div id="tool-modal" class="modal"><div class="modal-content"><span class="close-btn">&times;</span><h3 class="modal-title" id="tool-modal-title">Tool Name</h3><div class="tool-interface" id="tool-interface-content"></div></div></div>
+    
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    
+    const body = document.body;
+
+    // This part is for the visual background effects. No changes needed here.
+    const createConfetti = () => {
+        const confettiWrapper = document.getElementById('confetti-wrapper');
+        if (!confettiWrapper) return;
+        const confettiCount = 150;
+        const colors = ['#F48AAE', '#8B61F8', '#5AE3D3', '#3B7DF8', '#FFFFFF'];
+        for (let i = 0; i < confettiCount; i++) {
+            const confetti = document.createElement('div');
+            confetti.classList.add('confetti');
+            confetti.style.left = `${Math.random() * 100}vw`;
+            confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+            const duration = Math.random() * 3 + 4;
+            confetti.style.animationDuration = `${duration}s`;
+            const delay = Math.random() * 2;
+            confetti.style.animationDelay = `${delay}s`;
+            confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
+            confettiWrapper.appendChild(confetti);
+        }
+        setTimeout(() => { if(confettiWrapper) { confettiWrapper.innerHTML = ''; } }, 8000); 
+    };
+    createConfetti();
+    const starfieldCanvas = document.getElementById('starfield-canvas');
+    const starfieldCtx = starfieldCanvas.getContext('2d');
+    const nebulaCanvas = document.getElementById('nebula-canvas');
+    const nebulaCtx = nebulaCanvas.getContext('2d');
+    let stars = [], comets = [], animationFrameId;
+    const mouse = { x: undefined, y: undefined };
+    function setupCanvases() {
+        const dpr = window.devicePixelRatio || 1;
+        const width = window.innerWidth;
+        const height = window.innerHeight;
+        [starfieldCanvas, nebulaCanvas].forEach(canvas => {
+            canvas.width = width * dpr;
+            canvas.height = height * dpr;
+            canvas.style.width = `${width}px`;
+            canvas.style.height = `${height}px`;
+            canvas.getContext('2d').scale(dpr, dpr);
+        });
+    }
+    function drawNebula() {
+        nebulaCtx.clearRect(0, 0, nebulaCanvas.width, nebulaCanvas.height);
+        const nebulaColors = [{ r: 106, g: 61, b: 248 }, { r: 244, g: 138, b: 174 }, { r: 20, g: 30, b: 80 }];
+        for (let i = 0; i < 15; i++) {
+            const x = Math.random() * window.innerWidth;
+            const y = Math.random() * window.innerHeight;
+            const radius = Math.random() * (window.innerWidth / 4) + (window.innerWidth / 10);
+            const color = nebulaColors[Math.floor(Math.random() * nebulaColors.length)];
+            const gradient = nebulaCtx.createRadialGradient(x, y, 0, x, y, radius);
+            gradient.addColorStop(0, `rgba(${color.r}, ${color.g}, ${color.b}, 0.2)`);
+            gradient.addColorStop(1, `rgba(${color.r}, ${color.g}, ${color.b}, 0)`);
+            nebulaCtx.fillStyle = gradient;
+            nebulaCtx.fillRect(0, 0, window.innerWidth, window.innerHeight);
+        }
+    }
+    function createStars() {
+        stars = [];
+        const starCount = Math.floor((window.innerWidth * window.innerHeight) / 2500);
+        const starColors = ['#FFFFFF', '#FFDDC1', '#A9C2FF', '#FFFAE1'];
+        for (let i = 0; i < starCount; i++) {
+            const layer = Math.ceil(Math.random() * 3);
+            const originalRadius = (Math.random() * 0.8 + 0.5) * layer;
+            stars.push({ x: Math.random() * window.innerWidth, y: Math.random() * window.innerHeight, radius: originalRadius, originalRadius, color: starColors[Math.floor(Math.random() * starColors.length)], velocity: 0.3 * layer, pulseDirection: Math.random() > 0.5 ? 1 : -1, pulseSpeed: Math.random() * 0.015 });
+        }
+    }
+    function createComets() {
+        comets = [];
+        for (let i = 0; i < 15; i++) {
+             comets.push({ x: Math.random() * window.innerWidth, y: Math.random() * -window.innerHeight, length: Math.random() * 300 + 150, radius: Math.random() * 2 + 1, velocity: { x: (Math.random() - 0.5) * 10, y: Math.random() * 10 + 10 } });
+        }
+    }
+    function drawAnimatedElements() {
+        starfieldCtx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+        const theme = body.getAttribute('data-theme') || 'dark';
+        const lightThemeMultiplier = theme === 'light' ? 0.4 : 1;
+        stars.forEach(star => {
+            starfieldCtx.beginPath();
+            starfieldCtx.fillStyle = star.color;
+            starfieldCtx.globalAlpha = lightThemeMultiplier * (star.radius / star.originalRadius * 0.8 + 0.2);
+            starfieldCtx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+            starfieldCtx.fill();
+        });
+        starfieldCtx.globalAlpha = 1;
+        comets.forEach(comet => {
+            const gradient = starfieldCtx.createLinearGradient(comet.x, comet.y, comet.x - comet.velocity.x * (comet.length/15), comet.y - comet.velocity.y * (comet.length/15));
+            const cometHeadColor = theme === 'light' ? `rgba(59, 125, 248, ${0.8 * lightThemeMultiplier})` : `rgba(200, 220, 255, 0.9)`;
+            gradient.addColorStop(0, cometHeadColor);
+            gradient.addColorStop(1, "transparent");
+            starfieldCtx.beginPath();
+            starfieldCtx.moveTo(comet.x, comet.y);
+            starfieldCtx.lineTo(comet.x - comet.velocity.x * (comet.length/15), comet.y - comet.velocity.y * (comet.length/15));
+            starfieldCtx.strokeStyle = gradient;
+            starfieldCtx.lineWidth = comet.radius;
+            starfieldCtx.stroke();
+        });
+        if (mouse.x !== undefined && mouse.y !== undefined) {
+             for (let i = 0; i < stars.length; i++) {
+                const dx = stars[i].x - mouse.x;
+                const dy = stars[i].y - mouse.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                if (distance < 150) {
+                    starfieldCtx.beginPath();
+                    starfieldCtx.moveTo(mouse.x, mouse.y);
+                    starfieldCtx.lineTo(stars[i].x, stars[i].y);
+                    const opacity = 1 - (distance / 150);
+                    const lineColor = theme === 'light' ? `rgba(0, 0, 0, ${opacity * 0.3})` : `rgba(255, 255, 255, ${opacity * 0.3})`;
+                    starfieldCtx.strokeStyle = lineColor;
+                    starfieldCtx.lineWidth = 0.5;
+                    starfieldCtx.stroke();
+                }
+             }
+        }
+    }
+    function update() {
+        stars.forEach(star => {
+            star.y += star.velocity;
+            if (star.y > window.innerHeight + star.radius) {
+                star.y = -star.radius;
+                star.x = Math.random() * window.innerWidth;
+            }
+            star.radius += star.pulseSpeed * star.pulseDirection;
+            if (star.radius > star.originalRadius * 1.5 || star.radius < star.originalRadius * 0.5) {
+                star.pulseDirection *= -1;
+            }
+        });
+        comets.forEach(comet => {
+            comet.x += comet.velocity.x;
+            comet.y += comet.velocity.y;
+            if (comet.y > window.innerHeight + 50 || comet.x < -50 || comet.x > window.innerWidth + 50) {
+                comet.x = Math.random() * window.innerWidth;
+                comet.y = Math.random() * -window.innerHeight / 2;
+            }
+        });
+    }
+    function animate() {
+        drawAnimatedElements();
+        update();
+        animationFrameId = requestAnimationFrame(animate);
+    }
+    function initAnimation() {
+        if (animationFrameId) cancelAnimationFrame(animationFrameId);
+        setupCanvases();
+        drawNebula();
+        createStars();
+        createComets();
+        animate();
+    }
+    window.addEventListener('resize', initAnimation);
+    window.addEventListener('mousemove', (e) => { mouse.x = e.clientX; mouse.y = e.clientY; });
+    window.addEventListener('mouseout', () => { mouse.x = undefined; mouse.y = undefined; });
+    initAnimation();
+    // --- End of Visual Effects ---
+
+    
+    // --- UI and Tool Logic Starts Here ---
+    const themeToggle = document.getElementById('theme-toggle');
+    const currentTheme = localStorage.getItem('theme');
+    if (currentTheme) {
+        body.setAttribute('data-theme', currentTheme);
+        if (currentTheme === 'light') themeToggle.checked = true;
+    } else { body.setAttribute('data-theme', 'dark'); }
+    themeToggle.addEventListener('change', () => {
+        let theme = themeToggle.checked ? 'light' : 'dark';
+        body.setAttribute('data-theme', theme);
+        localStorage.setItem('theme', theme);
+    });
+
+    const sidebarToggleBtn = document.getElementById('sidebar-toggle-btn');
+    const mobileMenuToggleBtn = document.getElementById('mobile-menu-toggle-btn');
+    const mainElement = document.querySelector('main');
+
+    sidebarToggleBtn.addEventListener('click', () => body.classList.toggle('sidebar-collapsed'));
+    
+    mobileMenuToggleBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        body.classList.toggle('sidebar-open');
+    });
+    
+    // This makes the mobile sidebar close when you click on the main content area
+    mainElement.addEventListener('click', () => {
+        if (body.classList.contains('sidebar-open')) {
+            body.classList.remove('sidebar-open');
+        }
+    });
+
+    const mainContent = document.getElementById('main-content-wrapper');
+    const policyContent = document.getElementById('policy-content-wrapper');
+    const mainLinks = document.querySelectorAll('.main-link');
+    const pageLinks = document.querySelectorAll('.page-link');
+    const navLinks = document.querySelectorAll('#main-nav a');
+    const showMainContent = () => { mainContent.style.display = 'block'; policyContent.style.display = 'none'; };
+    const showPolicyPage = (targetId) => { mainContent.style.display = 'none'; policyContent.style.display = 'block'; document.querySelectorAll('.page-content').forEach(p => p.style.display = 'none'); const target = document.querySelector(targetId); if (target) target.style.display = 'block'; window.scrollTo(0, 0); };
+    mainLinks.forEach(link => link.addEventListener('click', e => { e.preventDefault(); showMainContent(); const targetId = link.getAttribute('href'); const targetEl = document.querySelector(targetId); if(targetEl) targetEl.scrollIntoView({ behavior: 'smooth' }); navLinks.forEach(n => n.classList.remove('active-link')); const activeNav = document.querySelector(`#main-nav a[href="${targetId}"]`); if(activeNav) activeNav.classList.add('active-link'); if (body.classList.contains('sidebar-open')) body.classList.remove('sidebar-open'); }));
+    pageLinks.forEach(link => link.addEventListener('click', e => { e.preventDefault(); const targetId = link.getAttribute('href'); showPolicyPage(targetId); navLinks.forEach(n => n.classList.remove('active-link')); }));
+    const sidebarLinks = document.querySelectorAll('.sidebar-link');
+    const toolCards = document.querySelectorAll('.tool-card');
+    const adGridItems = document.querySelectorAll('.ad-grid-item');
+    sidebarLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            showMainContent();
+            sidebarLinks.forEach(l => l.classList.remove('active'));
+            this.classList.add('active');
+            const category = this.dataset.category;
+            
+            toolCards.forEach(card => {
+                const cardCats = card.dataset.category.split(' ');
+                const isVisible = (category === 'all' || cardCats.includes(category));
+                card.style.display = isVisible ? 'flex' : 'none';
+            });
+            
+            adGridItems.forEach(ad => {
+                 ad.style.display = 'block';
+            });
+            
+            const toolsSection = document.querySelector('#tools');
+            if (toolsSection) toolsSection.scrollIntoView({ behavior: 'smooth' });
+            if (window.innerWidth <= 768 && body.classList.contains('sidebar-open')) body.classList.remove('sidebar-open');
+        });
+    });
+
+    const toolModal = document.getElementById('tool-modal');
+    const toolModalTitle = document.getElementById('tool-modal-title');
+    const toolInterfaceContent = document.getElementById('tool-interface-content');
+    
+    const closeModal = (modal) => {
+        modal.style.display = 'none'; 
+        toolInterfaceContent.innerHTML = ''; 
+        document.body.classList.remove('modal-open'); 
+    };
+
+    document.querySelector('.modal .close-btn').addEventListener('click', (e) => closeModal(e.target.closest('.modal')));
+    window.addEventListener('click', (e) => { 
+        if (e.target.classList.contains('modal')) {
+            closeModal(e.target); 
+        }
+    });
+
+    document.querySelectorAll('.tool-card').forEach(card => {
+        card.addEventListener('click', () => {
+            const toolId = card.dataset.tool;
+            toolModalTitle.innerText = card.querySelector('h3').innerText;
+            setupToolInterface(toolId);
+            toolModal.style.display = 'flex';
+            document.body.classList.add('modal-open'); 
+            
+            // This line which caused scrolling has been removed.
+            // window.scrollTo(0, 0); 
+        });
+    });
+    
+    // The rest of the setupToolInterface and addToolEventListeners functions are unchanged
+    const setupToolInterface = (toolId) => {
+        let html = '';
+        
+        const adInModalHTML = `<div class="ad-wrapper" style="margin: 1.5rem auto 1rem auto; padding: 0;">
+                                <script async="async" data-cfasync="false" src="//pl26585087.profitableratecpm.com/fd31bbebc1a0969f799516a51fddc752/invoke.js"><\/script>
+                                <div id="container-fd31bbebc1a0969f799516a51fddc752-modal-${toolId}"></div>
+                               </div>`;
+        
+        const fileToolUI = (isMultiple = false, accept = "*") => `<div class="drop-zone" id="drop-zone"><p class="drop-zone-text">File(s) yahan drag aur drop karein, ya select karne ke liye click karein</p><div id="file-list"></div><input type="file" id="file-input" ${isMultiple ? 'multiple' : ''} accept="${accept}" hidden></div><div id="tool-specific-controls"></div><div class="processing-status" id="processing-status" style="display:none;"></div>${adInModalHTML}<button id="process-btn" class="cta-button" style="width:100%; display:none; border-radius:8px;">Process Karein</button><div id="tool-results" class="tool-results"></div>`;
+        const textToTextUI = (inPlaceholder, outPlaceholder, btnText) => `<textarea id="text-input" class="tool-textarea" placeholder="${inPlaceholder}"></textarea><div id="tool-specific-controls"></div>${adInModalHTML}<button id="process-btn" class="cta-button" style="width:100%; border-radius:8px;">${btnText}</button><textarea id="tool-output" class="tool-textarea" placeholder="${outPlaceholder}" readonly style="margin-top:1rem;"></textarea>`;
+
+        switch (toolId) {
+            case 'merge-pdf': html = fileToolUI(true, ".pdf"); break;
+            case 'split-pdf': html = fileToolUI(false, ".pdf"); break;
+            case 'word-to-pdf': html = fileToolUI(false, ".docx, .doc"); break;
+            case 'excel-to-pdf': html = fileToolUI(false, ".xlsx, .xls"); break;
+            case 'pdf-to-jpg': html = fileToolUI(false, ".pdf"); break;
+            case 'jpg-to-pdf': html = fileToolUI(true, "image/jpeg, image/png"); break;
+            case 'compress-image': html = fileToolUI(false, "image/jpeg, image/png"); break;
+            case 'text-to-speech': html = `<textarea id="tts-input" class="tool-textarea" placeholder="Yahan text enter karein..."></textarea>${adInModalHTML}<button id="tts-speak-btn" class="cta-button" style="width:100%; border-radius:8px;">Bolein</button>`; break;
+            case 'speech-to-text': html = `<textarea id="stt-output" class="tool-textarea" placeholder="Bolna shuru karne ke liye button dabayein..."></textarea>${adInModalHTML}<button id="stt-btn" class="cta-button speech-btn" style="width:100%; border-radius:8px;">Record Karein</button>`; break;
+            case 'qr-generator': html = `<textarea id="qr-input" class="tool-textarea" placeholder="URL ya text enter karein..."></textarea>${adInModalHTML}<button id="qr-generate-btn" class="cta-button" style="width:100%; border-radius:8px;">QR Code Banayein</button><div class="tool-output" id="tool-output" style="text-align:center; padding: 1rem; display:none;"><canvas id="qr-code-canvas"></canvas><br><a id="qr-download-link" class="download-button" style="display:none; margin-top:1rem; width:auto;">Download QR</a></div>`; break;
+            case 'password-generator': html = `<div class="tool-controls"><label for="pw-length">Length: <span id="pw-length-val">12</span></label><input type="range" id="pw-length" min="8" max="32" value="12"></div><div class="tool-controls"><input type="checkbox" id="pw-nums" checked> <label for="pw-nums">Numbers (0-9)</label></div><div class="tool-controls"><input type="checkbox" id="pw-syms" checked> <label for="pw-syms">Symbols (!@#)</label></div><div id="tool-output" class="tool-output" style="text-align:center; font-weight:bold; font-size: 1.2rem; letter-spacing: 1px; user-select: all; cursor: copy;"></div>${adInModalHTML}<button id="pw-generate-btn" class="cta-button" style="width:100%; border-radius:8px;">Generate New</button>`; break;
+            case 'word-counter': html = `<textarea id="wc-input" class="tool-textarea" placeholder="Ginti ke liye yahan text paste karein..."></textarea><div id="tool-output" class="tool-output">Words: 0 | Characters: 0 | Sentences: 0 | Paragraphs: 0</div>${adInModalHTML}`; break;
+            case 'age-calculator': html = `<div class="tool-controls" style="justify-content: center;"><label for="dob-input">Apni Janam Tithi Chunein:</label><input type="date" id="dob-input"></div>${adInModalHTML}<button id="age-calc-btn" class="cta-button" style="width:100%; border-radius:8px;">Calculate Karein</button><div id="tool-output" class="tool-output" style="text-align:center; font-size: 1.2rem; display:none;"></div>`; break;
+            case 'bmi-calculator': html = `<div class="tool-controls"><label for="bmi-height">Height (cm):</label><input type="number" id="bmi-height" placeholder="170" style="flex:1"></div><div class="tool-controls"><label for="bmi-weight">Weight (kg):</label><input type="number" id="bmi-weight" placeholder="65" style="flex:1"></div>${adInModalHTML}<button id="bmi-calc-btn" class="cta-button" style="width:100%; border-radius:8px;">Calculate Karein</button><div id="tool-output" class="tool-output" style="text-align:center; font-size: 1.2rem; display:none;"></div>`; break;
+            case 'color-picker': html = `<p style="text-align:center;">Rang chunne ke liye color wheel par click karein.</p><div style="display:flex; justify-content:center; align-items:center; gap: 1rem; margin-top:1rem;"><input type="color" id="color-input" value="#f58cbf" style="width: 80px; height: 80px; border:none; background:none; cursor:pointer;"><div id="tool-output" class="tool-output" style="flex-grow:1; text-align:center; font-weight: bold;">#f58cbf</div></div>${adInModalHTML}`; break;
+            case 'gpa-calculator': html = `<div id="gpa-courses"></div><button id="add-course-btn" class="cta-button" style="border-radius:8px;font-size:0.9rem;padding:0.8rem 1.2rem;width:auto;">Add Course</button>${adInModalHTML}<button id="gpa-calc-btn" class="cta-button" style="width:100%;border-radius:8px;margin-top:1rem;">Calculate GPA</button><div id="tool-output" class="tool-output" style="text-align:center;font-size:1.5rem;font-weight:bold;display:none;"></div>`; break;
+            case 'citation-generator': html = `<div class="tool-controls" style="flex-direction:column; align-items:stretch; gap:1rem;"><div class="tool-controls"><label>Style:</label><select id="cite-style"><option>APA</option><option>MLA</option></select></div><div class="tool-controls"><label>Source:</label><select id="cite-source"><option>Website</option><option>Book</option></select></div><div id="cite-fields"></div></div>${adInModalHTML}<button id="process-btn" class="cta-button" style="width:100%;border-radius:8px;margin-top:1rem;">Generate Citation</button><div id="tool-output" class="tool-output" style="display:none; text-align:left; user-select:all; cursor:copy;"></div>`; break;
+            case 'text-summarizer': html = textToTextUI("Lamba text yahan paste karein...", "Summary yahan dikhegi...", "Summarize Karein"); break;
+            case 'study-timer': html = `<div id="timer-display" style="font-size:5rem; text-align:center; font-weight:bold;">25:00</div><div class="tool-controls" style="justify-content:center;"><button id="start-pause-btn" class="cta-button" style="border-radius:8px;">Start</button><button id="reset-btn" class="cta-button" style="border-radius:8px;">Reset</button></div>${adInModalHTML}<div id="session-count" style="text-align:center; margin-top:1rem; color:var(--subtext-color);">Sessions: 0</div>`; break;
+            case 'ocr-tool': html = fileToolUI(false, "image/*"); break;
+            case 'compress-pdf': html = fileToolUI(false, ".pdf"); break;
+            case 'convert-image': html = fileToolUI(false, "image/*"); break;
+            case 'case-converter': html = `<textarea id="text-input" class="tool-textarea" placeholder="Apna text yahan paste karein..."></textarea><div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:1rem;"><button class="cta-button" data-case="upper" style="flex-grow:1; border-radius:8px; font-size:0.9rem; padding:0.8rem;">UPPERCASE</button><button class="cta-button" data-case="lower" style="flex-grow:1; border-radius:8px; font-size:0.9rem; padding:0.8rem;">lowercase</button><button class="cta-button" data-case="title" style="flex-grow:1; border-radius:8px; font-size:0.9rem; padding:0.8rem;">Title Case</button><button class="cta-button" data-case="sentence" style="flex-grow:1; border-radius:8px; font-size:0.9rem; padding:0.8rem;">Sentence case</button></div><textarea id="tool-output" class="tool-textarea" readonly style="margin-top:1rem;"></textarea>${adInModalHTML}`; break;
+            case 'hash-generator': html = textToTextUI("Hash karne ke liye text enter karein...", "Hashes yahan dikhenge...", "Generate Hashes"); break;
+            case 'json-formatter': html = textToTextUI("Apna JSON yahan paste karein...", "Formatted JSON yahan dikhega...", "Format JSON"); break;
+            case 'base64-converter': html = `<textarea id="text-input" class="tool-textarea" placeholder="Text ya Base64 string enter karein..."></textarea><div style="display:flex; gap:10px; margin-top:1rem;"><button id="encode-btn" class="cta-button" style="flex-grow:1; border-radius:8px;">Encode</button><button id="decode-btn" class="cta-button" style="flex-grow:1; border-radius:8px;">Decode</button></div><textarea id="tool-output" class="tool-textarea" readonly style="margin-top:1rem;"></textarea>${adInModalHTML}`; break;
+            case 'pdf-watermark': html = fileToolUI(false, ".pdf"); break;
+            case 'favicon-generator': html = fileToolUI(false, "image/png, image/jpeg"); break;
+            case 'random-picker': html = `<textarea id="text-input" class="tool-textarea" placeholder="Har line mein ek item likhein..."></textarea>${adInModalHTML}<button id="process-btn" class="cta-button" style="width:100%; border-radius:8px;">Ek Item Chunein</button><div id="tool-output" class="tool-output" style="text-align:center; font-size: 1.5rem; font-weight: bold; display:none;"></div>`; break;
+            case 'css-gradient': html = `<div id="gradient-preview" style="height: 150px; border-radius: 8px; border: 1px solid var(--card-border);"></div><div class="tool-controls" style="margin-top: 1rem; justify-content: space-around;"><label>Color 1: <input type="color" id="grad-color1" value="#F48AAE"></label><label>Color 2: <input type="color" id="grad-color2" value="#8B61F8"></label></div><div class="tool-controls" style="margin-top: 1rem;"><label>Angle:</label><input type="range" id="grad-angle" min="0" max="360" value="90"><span id="grad-angle-val">90°</span></div><textarea id="tool-output" class="tool-textarea" readonly style="margin-top:1rem;"></textarea>${adInModalHTML}`; break;
+            case 'emi-calculator': html = `<div class="tool-controls" style="flex-direction:column; align-items:stretch; gap: 1rem;"><div class="tool-controls"><label>Loan Amount (₹):</label><input type="number" id="emi-principal" placeholder="100000"></div><div class="tool-controls"><label>Interest Rate (%/year):</label><input type="number" id="emi-rate" placeholder="8.5"></div><div class="tool-controls"><label>Loan Term (years):</label><input type="number" id="emi-years" placeholder="5"></div></div>${adInModalHTML}<button id="process-btn" class="cta-button" style="width:100%; border-radius:8px; margin-top: 1rem;">Calculate EMI</button><div id="tool-output" class="tool-output" style="display:none; text-align: left;"></div>`; break;
+            case 'unix-converter': html = `<div class="tool-controls" style="flex-direction:column; align-items:stretch; gap: 1rem;"><h4>Timestamp to Date</h4><input type="number" id="unix-ts-input" placeholder="Enter Unix Timestamp..."><button id="unix-now-btn" class="cta-button" style="border-radius:8px;font-size:0.8rem;padding:0.5rem 1rem;">Current Time</button><p id="unix-date-output" style="text-align:center;"></p><hr style="border-color:var(--card-border); width:100%;"><h4>Date to Timestamp</h4><input type="datetime-local" id="unix-date-input"><p id="unix-ts-output" style="text-align:center;"></p></div>${adInModalHTML}`; break;
+            default: html = `<p>Tool not found.</p>`; break;
+        }
+        toolInterfaceContent.innerHTML = html;
+        addToolEventListeners(toolId);
+    };
+
+    const addToolEventListeners = (toolId) => {
+        const outputDiv = document.getElementById('tool-output'); 
+        const textInput = document.getElementById('text-input');
+        const processBtn = document.getElementById('process-btn'); 
+        const processingStatus = document.getElementById('processing-status'); 
+        const resultsDiv = document.getElementById('tool-results'); 
+        let selectedFiles = []; 
+        const formatBytes = (bytes, decimals = 2) => { if (bytes === 0) return '0 Bytes'; const k = 1024; const dm = decimals < 0 ? 0 : decimals; const sizes = ['Bytes', 'KB', 'MB', 'GB']; const i = Math.floor(Math.log(bytes) / Math.log(k)); return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i]; }; 
+        
+        if (document.getElementById('drop-zone')) { 
+            const dropZone = document.getElementById('drop-zone'); 
+            const fileInput = document.getElementById('file-input'); 
+            const fileListDiv = document.getElementById('file-list'); 
+            const resetState = () => { if(resultsDiv) { resultsDiv.style.display = 'none'; resultsDiv.innerHTML = ''; } if(processingStatus) processingStatus.style.display = 'none'; }; 
+            const updateFileList = () => { fileListDiv.innerHTML = selectedFiles.map(f => `<p>${f.name} (${formatBytes(f.size)})</p>`).join(''); if(processBtn) processBtn.style.display = selectedFiles.length > 0 ? 'block' : 'none'; resetState(); }; 
+            const handleFiles = (files) => { const newFiles = Array.from(files); if (fileInput.multiple) { selectedFiles.push(...newFiles); } else { selectedFiles = newFiles.slice(0, 1); } updateFileList(); }; 
+            dropZone.addEventListener('click', () => fileInput.click()); 
+            fileInput.addEventListener('change', (e) => handleFiles(e.target.files)); 
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => dropZone.addEventListener(eventName, (e) => {e.preventDefault(); e.stopPropagation();}, false)); 
+            dropZone.addEventListener('dragenter', () => dropZone.classList.add('dragover')); 
+            dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover')); 
+            dropZone.addEventListener('drop', (e) => { dropZone.classList.remove('dragover'); handleFiles(e.dataTransfer.files); }); 
+        } 
+        
+        const showStatus = (message) => { if(!processingStatus) return; processingStatus.style.display = 'block'; processingStatus.innerHTML = `<p class="status-item active">${message}</p>`; }; 
+        const showDownloadLink = (blob, filename, container) => { container.style.display = 'block'; const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = filename; a.className = 'download-button'; a.textContent = `Download ${filename}`; container.innerHTML = ''; container.appendChild(a); }; 
+        const processWith = async (toolLogic) => { if (!processBtn) return; processBtn.addEventListener('click', async () => { if (selectedFiles.length === 0 && textInput && textInput.value.trim() === '') { alert('Kripya file chunein ya text enter karein.'); return; } if (selectedFiles.length === 0 && !textInput) { alert('Kripya file chunein.'); return;} processBtn.disabled = true; processBtn.textContent = 'Processing...'; if(resultsDiv) { resultsDiv.style.display = 'none'; resultsDiv.innerHTML = ''; } try { await toolLogic(); } catch(err) { console.error("Tool Error:", err); showStatus(`Ek error aayi: ${err.message}`); } finally { processBtn.disabled = false; processBtn.textContent = 'Process Karein'; } }); }; 
+        
+        switch (toolId) { 
+            case 'merge-pdf': processWith(async () => { if (selectedFiles.length < 2) { showStatus('Kripya merge karne ke liye kam se kam 2 PDF files chunein.'); return; } showStatus('PDFs load ho rahi hain...'); const { PDFDocument } = PDFLib; const mergedPdf = await PDFDocument.create(); for (const [index, file] of selectedFiles.entries()) { showStatus(`File ${index + 1}/${selectedFiles.length} process ho rahi hai...`); const arrayBuffer = await file.arrayBuffer(); const pdf = await PDFDocument.load(arrayBuffer, { ignoreEncryption: true }); const copiedPages = await mergedPdf.copyPages(pdf, pdf.getPageIndices()); copiedPages.forEach(page => mergedPdf.addPage(page)); } showStatus('Final PDF banayi ja rahi hai...'); const mergedPdfBytes = await mergedPdf.save(); showStatus('Ho gaya!'); showDownloadLink(new Blob([mergedPdfBytes], { type: 'application/pdf' }), 'merged.pdf', resultsDiv); }); break; 
+            case 'split-pdf': processWith(async () => { showStatus('PDF load ho rahi hai...'); const { PDFDocument } = PDFLib; const arrayBuffer = await selectedFiles[0].arrayBuffer(); const pdfDoc = await PDFDocument.load(arrayBuffer, { ignoreEncryption: true }); const pageCount = pdfDoc.getPageCount(); if (pageCount < 2) { showStatus('Split karne ke liye PDF mein 1 se zyada page hone chahiye.'); return; } resultsDiv.style.display = "block"; resultsDiv.innerHTML = '<h4>Results:</h4><div class="results-grid"></div>'; const grid = resultsDiv.querySelector('.results-grid'); for (let i = 0; i < pageCount; i++) { showStatus(`Page ${i + 1}/${pageCount} split ho raha hai...`); const subDoc = await PDFDocument.create(); const [copiedPage] = await subDoc.copyPages(pdfDoc, [i]); subDoc.addPage(copiedPage); const pdfBytes = await subDoc.save(); const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([pdfBytes], { type: 'application/pdf' })); a.download = `page_${i + 1}_of_${pageCount}.pdf`; a.className = 'download-button'; a.textContent = `Page ${i + 1}`; grid.appendChild(a); } showStatus(`Ho gaya! ${pageCount} pages split ho gaye.`); }); break; 
+            case 'word-to-pdf': processWith(async () => { showStatus('Word file ko HTML mein convert kiya ja raha hai...'); const arrayBuffer = await selectedFiles[0].arrayBuffer(); const result = await mammoth.convertToHtml({ arrayBuffer }); showStatus('HTML se PDF banayi ja rahi hai...'); const element = document.createElement('div'); element.innerHTML = result.value; await html2pdf().from(element).set({ margin: 1, filename: `converted-${selectedFiles[0].name.replace(/\.docx?/, '')}.pdf`, jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' } }).save(); showStatus('Ho gaya! Download shuru ho jayega.'); }); break; 
+            case 'excel-to-pdf': processWith(async () => { showStatus('Excel file padhi ja rahi hai...'); const data = await selectedFiles[0].arrayBuffer(); const workbook = XLSX.read(data); const sheetName = workbook.SheetNames[0]; const worksheet = workbook.Sheets[sheetName]; showStatus('HTML table banayi ja rahi hai...'); const html = XLSX.utils.sheet_to_html(worksheet); const element = document.createElement('div'); element.innerHTML = `<style>body{font-family:sans-serif;}table{border-collapse:collapse;width:100%;}td,th{border:1px solid #999;padding:8px;text-align:left;}</style>${html}`; showStatus('HTML se PDF banayi ja rahi hai...'); await html2pdf().from(element).set({ margin: 0.5, filename: `converted-${selectedFiles[0].name.replace(/\.xlsx?/, '')}.pdf`, jsPDF: { unit: 'in', format: 'letter', orientation: 'landscape' } }).save(); showStatus('Ho gaya! Download shuru ho jayega.'); }); break; 
+            case 'pdf-to-jpg': document.getElementById('tool-specific-controls').innerHTML = `<div class="tool-controls" style="justify-content:center;"><label>Format Chunein:</label><select id="img-format"><option value="image/jpeg">JPG</option><option value="image/png">PNG</option></select></div>`; processWith(async () => { showStatus('PDF load ho rahi hai...'); resultsDiv.style.display = "block"; resultsDiv.innerHTML = '<h4>Results:</h4><div class="results-grid"></div>'; const grid = resultsDiv.querySelector('.results-grid'); const arrayBuffer = await selectedFiles[0].arrayBuffer(); const pdf = await pdfjsLib.getDocument({data: arrayBuffer}).promise; const format = document.getElementById('img-format').value; const ext = format.split('/')[1]; for (let i = 1; i <= pdf.numPages; i++) { showStatus(`Page ${i}/${pdf.numPages} convert ho raha hai...`); const page = await pdf.getPage(i); const viewport = page.getViewport({ scale: 2.0 }); const canvas = document.createElement('canvas'); const context = canvas.getContext('2d'); canvas.height = viewport.height; canvas.width = viewport.width; await page.render({ canvasContext: context, viewport: viewport }).promise; const a = document.createElement('a'); a.href = canvas.toDataURL(format, 0.9); a.download = `page_${i}.${ext}`; a.className = 'download-button'; a.textContent = `Page ${i}`; grid.appendChild(a); } showStatus(`Ho gaya! ${pdf.numPages} pages convert ho gaye.`); }); break; 
+            case 'jpg-to-pdf': processWith(async () => { showStatus('Images load ho rahi hain...'); const { PDFDocument } = PDFLib; const pdfDoc = await PDFDocument.create(); for (const [index, file] of selectedFiles.entries()) { showStatus(`Image ${index + 1}/${selectedFiles.length} process ho rahi hai...`); const arrayBuffer = await file.arrayBuffer(); let image; if (file.type === 'image/png') { image = await pdfDoc.embedPng(arrayBuffer); } else { image = await pdfDoc.embedJpg(arrayBuffer); } const page = pdfDoc.addPage([image.width, image.height]); page.drawImage(image, { x: 0, y: 0, width: image.width, height: image.height }); } showStatus('Final PDF banayi ja rahi hai...'); const pdfBytes = await pdfDoc.save(); showStatus('Ho gaya!'); showDownloadLink(new Blob([pdfBytes], { type: 'application/pdf' }), 'converted-images.pdf', resultsDiv); }); break; 
+            case 'compress-image': const controls = document.getElementById('tool-specific-controls'); controls.innerHTML = `<div class="tool-controls"><label for="quality-range">Quality: <span id="quality-val">0.8</span></label><input type="range" id="quality-range" min="0.1" max="1" step="0.05" value="0.8"></div>`; document.getElementById('quality-range').addEventListener('input', (e) => { document.getElementById('quality-val').textContent = e.target.value; }); processWith(() => new Promise((resolve, reject) => { showStatus('Image compress ho rahi hai...'); const file = selectedFiles[0]; const originalSize = file.size; const quality = parseFloat(document.getElementById('quality-range').value); const reader = new FileReader(); reader.onload = (e) => { const img = new Image(); img.onload = () => { const canvas = document.createElement('canvas'); canvas.width = img.width; canvas.height = img.height; canvas.getContext('2d').drawImage(img, 0, 0); canvas.toBlob((blob) => { if (!blob) { return reject(new Error("Canvas to Blob conversion failed.")); } const newSize = blob.size; const reduction = Math.max(0, (((originalSize - newSize) / originalSize) * 100)).toFixed(1); showStatus(`Ho gaya! Size ${reduction}% kam hua.`); showDownloadLink(blob, `compressed-${file.name}`, resultsDiv); resolve(); }, 'image/jpeg', quality); }; img.onerror = () => reject(new Error("Image load error.")); img.src = e.target.result; }; reader.onerror = () => reject(new Error("File read error.")); reader.readAsDataURL(file); })); break; 
+            case 'word-counter': document.getElementById('wc-input').addEventListener('input', (e) => { const text = e.target.value; const words = text.match(/\b\w+\b/g)?.length || 0; const chars = text.length; const sentences = text.match(/[^.!?\s][^.!?]*(?:[.!?](?!['"]?\s|$)[^.!?]*)*[.!?]?['"]?(?=\s|$)/g)?.length || 0; const paragraphs = text.split(/\n\s*\n/).filter(p => p.trim().length > 0).length || (text.trim().length > 0 ? 1 : 0); outputDiv.textContent = `Words: ${words} | Characters: ${chars} | Sentences: ${sentences} | Paragraphs: ${paragraphs}`; }); break; 
+            case 'age-calculator': document.getElementById('age-calc-btn').addEventListener('click', () => { const dobString = document.getElementById('dob-input').value; if (!dobString) { alert('Kripya janam tithi chunein.'); return; } const dob = new Date(dobString); const today = new Date(); if(dob > today) { alert('Janam tithi bhavishya ki nahi ho sakti.'); return; } let ageYears = today.getFullYear() - dob.getFullYear(); let ageMonths = today.getMonth() - dob.getMonth(); let ageDays = today.getDate() - dob.getDate(); if (ageDays < 0) { ageMonths--; ageDays += new Date(today.getFullYear(), today.getMonth(), 0).getDate(); } if (ageMonths < 0) { ageYears--; ageMonths += 12; } outputDiv.style.display = 'block'; outputDiv.textContent = `${ageYears} Saal, ${ageMonths} Mahine, ${ageDays} Din`; }); break; 
+            case 'bmi-calculator': document.getElementById('bmi-calc-btn').addEventListener('click', () => { const height = parseFloat(document.getElementById('bmi-height').value); const weight = parseFloat(document.getElementById('bmi-weight').value); if (!height || !weight || height <= 0 || weight <= 0) { alert('Sahi height aur weight enter karein.'); return; } const bmi = weight / ((height / 100) ** 2); let category = ''; if (bmi < 18.5) category = 'Underweight'; else if (bmi < 25) category = 'Normal weight'; else if (bmi < 30) category = 'Overweight'; else category = 'Obesity'; outputDiv.style.display = 'block'; outputDiv.textContent = `Aapka BMI: ${bmi.toFixed(2)} (${category})`; }); break; 
+            case 'speech-to-text': const sttBtn = document.getElementById('stt-btn'); const sttOutput = document.getElementById('stt-output'); const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition; if (SpeechRecognition) { const recognition = new SpeechRecognition(); recognition.continuous = true; recognition.interimResults = true; recognition.lang = 'hi-IN'; let isRecording = false; let finalTranscript = ''; recognition.onresult = (event) => { let interimTranscript = ''; for (let i = event.resultIndex; i < event.results.length; ++i) { if (event.results[i].isFinal) { finalTranscript += event.results[i][0].transcript; } else { interimTranscript += event.results[i][0].transcript; } } sttOutput.value = finalTranscript + interimTranscript; }; recognition.onend = () => { if (isRecording) { recognition.start(); } }; sttBtn.addEventListener('click', () => { isRecording = !isRecording; if (isRecording) { finalTranscript = sttOutput.value; recognition.start(); sttBtn.textContent = 'Recording... (Stop karne ke liye click karein)'; sttBtn.classList.add('recording'); } else { recognition.stop(); sttBtn.textContent = 'Record Karein'; sttBtn.classList.remove('recording'); } }); } else { sttBtn.disabled = true; sttBtn.textContent = 'Browser Supported Nahi Hai'; } break; 
+            case 'text-to-speech': document.getElementById('tts-speak-btn').addEventListener('click', () => { const text = document.getElementById('tts-input').value; if (text.trim() === '') { alert('Kuch bolne ke liye text enter karein.'); return; } speechSynthesis.cancel(); const utterance = new SpeechSynthesisUtterance(text); utterance.lang = 'hi-IN'; speechSynthesis.speak(utterance); }); break; 
+            case 'qr-generator': document.getElementById('qr-generate-btn').addEventListener('click', () => { const data = document.getElementById('qr-input').value.trim(); if (data === '') { alert('QR code banane ke liye text ya URL enter karein.'); return; } const qrCanvas = document.getElementById('qr-code-canvas'); const downloadLink = document.getElementById('qr-download-link'); outputDiv.style.display = 'block'; downloadLink.style.display = 'inline-block'; const qr = new Image(); qr.crossOrigin = "anonymous"; qr.onload = () => { const ctx = qrCanvas.getContext('2d'); qrCanvas.width=150; qrCanvas.height=150; ctx.drawImage(qr, 0, 0, 150, 150); downloadLink.href = qrCanvas.toDataURL("image/png"); downloadLink.download = "qrcode.png"; }; qr.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(data)}`; }); break; 
+            case 'password-generator': const range = document.getElementById('pw-length'), val = document.getElementById('pw-length-val'); const generate = () => { const len = parseInt(range.value); const useN = document.getElementById('pw-nums').checked, useS = document.getElementById('pw-syms').checked; const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz' + (useN ? '0123456789' : '') + (useS ? '!@#$%^&*()_+-=[]{}|;:,.<>?' : ''); if (chars.length < 52) { outputDiv.textContent = "Ek option chunein!"; return; } outputDiv.textContent = Array(len).fill(chars).map(x => x[Math.floor(Math.random() * x.length)]).join(''); }; range.addEventListener('input', () => { val.textContent = range.value; generate(); }); document.getElementById('pw-generate-btn').addEventListener('click', generate); document.querySelectorAll('#pw-nums, #pw-syms').forEach(el => el.addEventListener('change', generate)); outputDiv.addEventListener('click', () => { navigator.clipboard.writeText(outputDiv.textContent).then(() => { alert('Password clipboard mein copy ho gaya!'); }); }); generate(); break; 
+            case 'color-picker': document.getElementById('color-input').addEventListener('input', (e) => outputDiv.textContent = e.target.value); break; 
+            case 'gpa-calculator':
+                const coursesDiv = document.getElementById('gpa-courses');
+                const addCourseBtn = document.getElementById('add-course-btn');
+                const gpaCalcBtn = document.getElementById('gpa-calc-btn');
+                const gpaOutput = document.getElementById('tool-output');
+                const addCourseRow = () => {
+                    const row = document.createElement('div');
+                    row.className = 'tool-controls';
+                    row.style.gap = '5px';
+                    row.innerHTML = `<input type="text" placeholder="Course Name" style="flex:3;"><input type="number" placeholder="Credits" style="flex:1;"><input type="number" placeholder="Grade (4.0 scale)" style="flex:1;" step="0.1"><button style="background:var(--glow-primary);color:white;border:none;border-radius:4px;padding:0.5rem;cursor:pointer;">&times;</button>`;
+                    coursesDiv.appendChild(row);
+                    row.querySelector('button').addEventListener('click', () => row.remove());
+                };
+                addCourseBtn.addEventListener('click', addCourseRow);
+                gpaCalcBtn.addEventListener('click', () => {
+                    let totalCredits = 0, totalPoints = 0;
+                    coursesDiv.querySelectorAll('.tool-controls').forEach(row => {
+                        const credits = parseFloat(row.children[1].value);
+                        const grade = parseFloat(row.children[2].value);
+                        if(credits > 0 && grade >= 0) {
+                            totalCredits += credits;
+                            totalPoints += credits * grade;
+                        }
+                    });
+                    const gpa = totalCredits > 0 ? (totalPoints / totalCredits).toFixed(2) : '0.00';
+                    gpaOutput.style.display = 'block';
+                    gpaOutput.textContent = `Aapka GPA: ${gpa}`;
+                });
+                addCourseRow(); addCourseRow(); addCourseRow();
+                break;
+            case 'citation-generator':
+                const styleSelect = document.getElementById('cite-style');
+                const sourceSelect = document.getElementById('cite-source');
+                const fieldsDiv = document.getElementById('cite-fields');
+                const renderFields = () => {
+                    const source = sourceSelect.value;
+                    fieldsDiv.innerHTML = (source === 'Website') ? `<input type="text" id="cite-author" placeholder="Author (e.g., Kumar, A.)"><input type="text" id="cite-year" placeholder="Prakashan ka Saal (e.g., 2023)"><input type="text" id="cite-title" placeholder="Page ka Title"><input type="text" id="cite-site" placeholder="Website ka Naam"><input type="url" id="cite-url" placeholder="URL">` : `<input type="text" id="cite-author" placeholder="Author (e.g., Sharma, R.)"><input type="text" id="cite-year" placeholder="Prakashan ka Saal (e.g., 2021)"><input type="text" id="cite-title" placeholder="Kitab ka Title"><input type="text" id="cite-publisher" placeholder="Publisher ka Naam">`;
+                };
+                sourceSelect.addEventListener('change', renderFields);
+                processBtn.addEventListener('click', () => {
+                    const style = styleSelect.value;
+                    const source = sourceSelect.value;
+                    const author = document.getElementById('cite-author').value || 'N.p.';
+                    const year = document.getElementById('cite-year').value || 'n.d.';
+                    const title = document.getElementById('cite-title').value || 'Untitled';
+                    let citation = '';
+                    if(source === 'Website') {
+                        const site = document.getElementById('cite-site').value || 'Website';
+                        const url = document.getElementById('cite-url').value;
+                        if(style === 'APA') citation = `${author}. (${year}). <i>${title}</i>. ${site}. Retrieved from ${url}`;
+                        else citation = `${author}. "${title}." <i>${site}</i>, ${year}, ${url}.`;
+                    } else {
+                        const publisher = document.getElementById('cite-publisher').value || 'Publisher';
+                        if(style === 'APA') citation = `${author}. (${year}). <i>${title}</i>. ${publisher}.`;
+                        else citation = `${author}. <i>${title}</i>. ${publisher}, ${year}.`;
+                    }
+                    outputDiv.style.display = 'block';
+                    outputDiv.innerHTML = citation;
+                });
+                renderFields();
+                break;
+            case 'text-summarizer':
+                 processBtn.addEventListener('click', () => {
+                    const text = textInput.value;
+                    if(!text.trim()){ alert("Kripya text enter karein."); return; }
+                    const sentences = text.match(/[^.!?]+[.!?]+/g) || [];
+                    if(sentences.length < 3) { document.getElementById('tool-output').value = text; return; }
+                    const stopWords = new Set(['a', 'an', 'the', 'is', 'are', 'was', 'were', 'in', 'on', 'at', 'to', 'for', 'of', 'and', 'or', 'but', 'ka', 'ki', 'ke', 'hai', 'mein', 'par', 'aur']);
+                    const wordFreq = {};
+                    text.toLowerCase().split(/\W+/).forEach(word => { if(!stopWords.has(word)) wordFreq[word] = (wordFreq[word] || 0) + 1; });
+                    const sentenceScores = sentences.map(sentence => ({ sentence, score: sentence.toLowerCase().split(/\W+/).reduce((acc, word) => acc + (wordFreq[word] || 0), 0) }));
+                    sentenceScores.sort((a, b) => b.score - a.score);
+                    document.getElementById('tool-output').value = sentenceScores.slice(0, Math.max(1, Math.floor(sentences.length / 3))).map(item => item.sentence).join(' ');
+                 });
+                break;
+            case 'study-timer':
+                let timerInterval; let timeLeft = 25 * 60; let isRunning = false; let sessions = 0;
+                const timerDisplay = document.getElementById('timer-display');
+                const startPauseBtn = document.getElementById('start-pause-btn');
+                const resetBtn = document.getElementById('reset-btn');
+                const sessionCount = document.getElementById('session-count');
+                const updateDisplay = () => {
+                    const minutes = Math.floor(timeLeft / 60).toString().padStart(2, '0');
+                    const seconds = (timeLeft % 60).toString().padStart(2, '0');
+                    timerDisplay.textContent = `${minutes}:${seconds}`;
+                    document.title = `${minutes}:${seconds} - Study Timer`;
+                };
+                startPauseBtn.addEventListener('click', () => {
+                    isRunning = !isRunning;
+                    if(isRunning) {
+                        startPauseBtn.textContent = 'Pause';
+                        timerInterval = setInterval(() => {
+                            timeLeft--;
+                            if(timeLeft < 0) {
+                                clearInterval(timerInterval);
+                                alert("Session complete! Take a break.");
+                                sessions++;
+                                sessionCount.textContent = `Sessions: ${sessions}`;
+                                timeLeft = 25 * 60;
+                                isRunning = false;
+                                startPauseBtn.textContent = 'Start';
+                            }
+                            updateDisplay();
+                        }, 1000);
+                    } else {
+                        startPauseBtn.textContent = 'Start';
+                        clearInterval(timerInterval);
+                    }
+                });
+                resetBtn.addEventListener('click', () => {
+                    clearInterval(timerInterval);
+                    isRunning = false;
+                    timeLeft = 25 * 60;
+                    startPauseBtn.textContent = 'Start';
+                    updateDisplay();
+                });
+                break;
+            case 'ocr-tool':
+                processWith(async () => {
+                    showStatus('Image se text nikala ja raha hai... Ismein samay lag sakta hai.');
+                    const { data: { text } } = await Tesseract.recognize(
+                        selectedFiles[0],
+                        'eng+hin', 
+                        { logger: m => showStatus(`${m.status}: ${Math.round(m.progress * 100)}%`) }
+                    );
+                    showStatus('Ho gaya!');
+                    resultsDiv.style.display = "block";
+                    resultsDiv.innerHTML = `<textarea class="tool-textarea" readonly>${text}</textarea>`;
+                });
+                break;
+            case 'compress-pdf': processWith(async () => { showStatus('PDF ko re-save karke compress kiya ja raha hai...'); const { PDFDocument } = PDFLib; const arrayBuffer = await selectedFiles[0].arrayBuffer(); const pdfDoc = await PDFDocument.load(arrayBuffer, { ignoreEncryption: true }); const pdfBytes = await pdfDoc.save(); showStatus('Ho gaya! File ka size thoda kam ho sakta hai.'); showDownloadLink(new Blob([pdfBytes], { type: 'application/pdf' }), `compressed-${selectedFiles[0].name}`, resultsDiv); }); break; 
+            case 'convert-image': document.getElementById('tool-specific-controls').innerHTML = `<div class="tool-controls" style="justify-content:center;"><label>Convert To:</label><select id="img-format"><option value="image/jpeg">JPG</option><option value="image/png">PNG</option><option value="image/webp">WEBP</option></select></div>`; processWith(() => new Promise((resolve) => { showStatus('Image convert ho rahi hai...'); const file = selectedFiles[0]; const format = document.getElementById('img-format').value; const ext = format.split('/')[1]; const reader = new FileReader(); reader.onload = (e) => { const img = new Image(); img.onload = () => { const canvas = document.createElement('canvas'); canvas.width = img.width; canvas.height = img.height; canvas.getContext('2d').drawImage(img, 0, 0); canvas.toBlob((blob) => { showStatus('Ho gaya!'); showDownloadLink(blob, `converted.${ext}`, resultsDiv); resolve(); }, format, 0.9); }; img.src = e.target.result; }; reader.readAsDataURL(file); })); break;
+            case 'case-converter': document.querySelectorAll('#tool-interface-content button[data-case]').forEach(button => button.addEventListener('click', () => { const caseType = button.dataset.case; const value = document.getElementById('text-input').value; const outputEl = document.getElementById('tool-output'); switch(caseType){ case 'upper': outputEl.value = value.toUpperCase(); break; case 'lower': outputEl.value = value.toLowerCase(); break; case 'title': outputEl.value = value.replace(/\b\w/g, l => l.toUpperCase()); break; case 'sentence': outputEl.value = value.toLowerCase().replace(/(^\s*\w|[.!?]\s*\w)/g, c => c.toUpperCase()); break; } })); break;
+            case 'hash-generator': processBtn.addEventListener('click', () => { const text = textInput.value; if (!text) return; const md5 = CryptoJS.MD5(text).toString(); const sha1 = CryptoJS.SHA1(text).toString(); const sha256 = CryptoJS.SHA256(text).toString(); const sha512 = CryptoJS.SHA512(text).toString(); outputDiv.style.display = 'block'; outputDiv.innerHTML = `<p style="text-align:left; word-break:break-all;"><strong>MD5:</strong> ${md5}</p><p style="text-align:left; word-break:break-all;"><strong>SHA1:</strong> ${sha1}</p><p style="text-align:left; word-break:break-all;"><strong>SHA256:</strong> ${sha256}</p><p style="text-align:left; word-break:break-all;"><strong>SHA512:</strong> ${sha512}</p>`; }); break;
+            case 'json-formatter': processBtn.addEventListener('click', () => { const outputEl = document.getElementById('tool-output'); try { const obj = JSON.parse(textInput.value); outputEl.value = JSON.stringify(obj, null, 2); } catch (e) { outputEl.value = `Error: ${e.message}`; } }); break;
+            case 'base64-converter': document.getElementById('encode-btn').addEventListener('click', () => { try { document.getElementById('tool-output').value = btoa(unescape(encodeURIComponent(textInput.value))); } catch (e) { document.getElementById('tool-output').value = "Error"; } }); document.getElementById('decode-btn').addEventListener('click', () => { try { document.getElementById('tool-output').value = decodeURIComponent(escape(atob(textInput.value))); } catch (e) { document.getElementById('tool-output').value = "Invalid Base64"; } }); break;
+            case 'pdf-watermark': document.getElementById('tool-specific-controls').innerHTML = `<div class="tool-controls" style="flex-direction:column; align-items:stretch;"><input type="text" id="watermark-text" placeholder="Watermark Text"><input type="number" id="watermark-size" placeholder="Font Size (e.g., 50)" value="50"><label>Opacity: <input type="range" id="watermark-opacity" min="0.1" max="1" step="0.1" value="0.5"></label></div>`; processWith(async () => { showStatus('PDF par watermark lagaya ja raha hai...'); const { PDFDocument, rgb, StandardFonts, degrees } = PDFLib; const arrayBuffer = await selectedFiles[0].arrayBuffer(); const pdfDoc = await PDFDocument.load(arrayBuffer, { ignoreEncryption: true }); const font = await pdfDoc.embedFont(StandardFonts.HelveticaBold); const pages = pdfDoc.getPages(); const text = document.getElementById('watermark-text').value || 'SS Tools'; const size = parseInt(document.getElementById('watermark-size').value); const opacity = parseFloat(document.getElementById('watermark-opacity').value); for (const page of pages) { const { width, height } = page.getSize(); page.drawText(text, { x: width / 2 - (size * text.length / 4), y: height / 2 - size / 2, font, size, color: rgb(0.5, 0.5, 0.5), opacity, rotate: degrees(45), }); } const pdfBytes = await pdfDoc.save(); showStatus('Ho gaya!'); showDownloadLink(new Blob([pdfBytes], { type: 'application/pdf' }), `watermarked-${selectedFiles[0].name}`, resultsDiv); }); break;
+            case 'favicon-generator': processWith(async () => { showStatus('Favicons banaye ja rahe hain...'); const sizes = [16, 32, 180]; const zip = new JSZip(); const reader = new FileReader(); reader.onload = async e => { const img = new Image(); img.onload = async () => { for (const size of sizes) { const canvas = document.createElement('canvas'); canvas.width = size; canvas.height = size; canvas.getContext('2d').drawImage(img, 0, 0, size, size); const blob = await new Promise(res => canvas.toBlob(res, 'image/png')); const filename = size === 180 ? 'apple-touch-icon.png' : `favicon-${size}x${size}.png`; zip.file(filename, blob); } const zipBlob = await zip.generateAsync({type:"blob"}); showStatus('Ho gaya!'); resultsDiv.style.display = 'block'; showDownloadLink(zipBlob, 'favicons.zip', resultsDiv); resultsDiv.innerHTML += `<div class="tool-output" style="text-align:left; font-size:0.8rem; margin-top:1rem;"><strong>HTML Code:</strong><pre style="white-space:pre-wrap; user-select:all; cursor:copy;">&lt;link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png"&gt;\n&lt;link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"&gt;\n&lt;link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"&gt;</pre></div>`; }; img.src = e.target.result; }; reader.readAsDataURL(selectedFiles[0]); }); break;
+            case 'random-picker': processBtn.addEventListener('click', () => { const items = textInput.value.split('\n').map(i => i.trim()).filter(i => i); if(items.length === 0) return; const winner = items[Math.floor(Math.random() * items.length)]; outputDiv.style.display = 'block'; outputDiv.textContent = winner; }); break;
+            case 'css-gradient': const preview = document.getElementById('gradient-preview'); const color1 = document.getElementById('grad-color1'); const color2 = document.getElementById('grad-color2'); const angle = document.getElementById('grad-angle'); const angleVal = document.getElementById('grad-angle-val'); const updateGradient = () => { const css = `linear-gradient(${angle.value}deg, ${color1.value}, ${color2.value})`; preview.style.background = css; outputDiv.value = `background: ${css};`; angleVal.textContent = `${angle.value}°`; }; [color1, color2, angle].forEach(el => el.addEventListener('input', updateGradient)); updateGradient(); break;
+            case 'emi-calculator': processBtn.addEventListener('click', () => { const p = parseFloat(document.getElementById('emi-principal').value); const r_annual = parseFloat(document.getElementById('emi-rate').value); const t = parseFloat(document.getElementById('emi-years').value); if(!p || !r_annual || !t) { alert("Sabhi fields bharein."); return; } const r = r_annual / 12 / 100; const n = t * 12; const emi = p * r * Math.pow(1 + r, n) / (Math.pow(1 + r, n) - 1); const totalPayment = emi * n; const totalInterest = totalPayment - p; outputDiv.style.display = 'block'; outputDiv.innerHTML = `<p><strong>Maasik EMI:</strong> ₹${emi.toFixed(2)}</p><p><strong>Kul Byaaj:</strong> ₹${totalInterest.toFixed(2)}</p><p><strong>Kul Bhugtaan:</strong> ₹${totalPayment.toFixed(2)}</p>`; }); break;
+            case 'unix-converter': const tsInput = document.getElementById('unix-ts-input'); const dateInput = document.getElementById('unix-date-input'); const tsOutput = document.getElementById('unix-ts-output'); const dateOutput = document.getElementById('unix-date-output'); const tsToDate = () => { dateOutput.textContent = tsInput.value ? new Date(tsInput.value * 1000).toLocaleString() : ''; }; const dateToTs = () => { tsOutput.textContent = dateInput.value ? Math.floor(new Date(dateInput.value).getTime() / 1000) : ''; }; tsInput.addEventListener('input', tsToDate); dateInput.addEventListener('input', dateToTs); document.getElementById('unix-now-btn').addEventListener('click', () => { tsInput.value = Math.floor(Date.now() / 1000); tsToDate(); }); break;
+        }
+    };
+});
+</script>
+</body>
+</html>
